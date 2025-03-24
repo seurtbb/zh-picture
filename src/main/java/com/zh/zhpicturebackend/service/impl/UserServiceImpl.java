@@ -3,6 +3,7 @@ package com.zh.zhpicturebackend.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zh.zhpicturebackend.constant.UserConstant;
 import com.zh.zhpicturebackend.exception.BusinessException;
 import com.zh.zhpicturebackend.exception.ErrorCode;
 import com.zh.zhpicturebackend.model.entity.User;
@@ -12,10 +13,14 @@ import com.zh.zhpicturebackend.service.UserService;
 import com.zh.zhpicturebackend.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import static com.zh.zhpicturebackend.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * @author zhouzhou
@@ -118,9 +123,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或者密码错误");
         }
         //4.保存用户的登录态
-        request.getSession().setAttribute("user_login_state", user);
+        request.getSession().setAttribute(USER_LOGIN_STATE, user);
         //要返回脱敏后的用户信息
         return this.getLoginUserVo(user);
+    }
+
+    /**
+     * 获取当前登录用户的信息,不需要返回给前端
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public User getLoginUser(HttpServletRequest request) {
+        //判断是否登录
+        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        User Currentuser=(User)userObj;
+        if (Currentuser == null ||Currentuser.getId() == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        //从数据库查询
+        Long userId = Currentuser.getId();
+        User user = this.getById(userId);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        return Currentuser;
     }
 
     /**
@@ -137,6 +165,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         BeanUtils.copyProperties(user, loginUserVO);
         return loginUserVO;
     }
+
+    /**
+     * 用户登录退出
+     * @param request
+     * @return
+     */
+    @Override
+    public Boolean userLoginout(HttpServletRequest request) {
+        //判断用户是否登录
+        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        if (userObj == null ) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR,"未登录");
+        }
+        //移除用户登录session
+        request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
+        return true;
+    }
+
 }
 
 

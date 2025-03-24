@@ -4,14 +4,15 @@ import com.zh.zhpicturebackend.common.BaseResponse;
 import com.zh.zhpicturebackend.common.ResultUtils;
 import com.zh.zhpicturebackend.exception.ErrorCode;
 import com.zh.zhpicturebackend.exception.ThrowUtils;
+import com.zh.zhpicturebackend.model.dto.UserLoginRequest;
 import com.zh.zhpicturebackend.model.dto.UserRegisterRequest;
+import com.zh.zhpicturebackend.model.entity.User;
+import com.zh.zhpicturebackend.model.vo.LoginUserVO;
 import com.zh.zhpicturebackend.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/user")
@@ -32,5 +33,37 @@ public class UserController {
         long result = userService.userRegister(userAccount, userPassword, checkPassword);
         return ResultUtils.success(result);
     }
+    /**
+     * 用户登录
+     */
+    @PostMapping("/login")
+    public BaseResponse<LoginUserVO> userlogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(userLoginRequest == null, ErrorCode.PARAMS_ERROR);
+        String userAccount = userLoginRequest.getUserAccount();
+        String userPassword = userLoginRequest.getUserPassword();
+        LoginUserVO loginUserVO = userService.userLogin(userAccount, userPassword, request);
+        return ResultUtils.success(loginUserVO);
+    }
 
+    /**
+     * 获取当前登录用户
+     * getLoginUser:getLoginUser是获取当前用户的信息,返回给前端需要封装成VO
+     */
+    @GetMapping("/get/login")
+    public BaseResponse<LoginUserVO> getLoginUser(HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        return ResultUtils.success(userService.getLoginUserVo(loginUser));
+    }
+
+    /**
+     * 用户登录退出
+     * @param request
+     * @return
+     */
+    @PostMapping("/register")
+    public BaseResponse<Boolean> userLoginout(HttpServletRequest request) {
+        ThrowUtils.throwIf(request == null, ErrorCode.PARAMS_ERROR);
+        Boolean result = userService.userLoginout(request);
+        return ResultUtils.success(result);
+    }
 }
