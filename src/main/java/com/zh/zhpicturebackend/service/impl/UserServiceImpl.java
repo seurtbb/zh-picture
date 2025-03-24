@@ -208,7 +208,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     /**
      * 用户登录退出
      * @param request
-     * @return
+     * @returnj
      */
     @Override
     public Boolean userLoginout(HttpServletRequest request) {
