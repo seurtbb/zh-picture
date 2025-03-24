@@ -1,12 +1,15 @@
 package com.zh.zhpicturebackend.controller;
 
+import com.zh.zhpicturebackend.annotation.AutoCheck;
 import com.zh.zhpicturebackend.common.BaseResponse;
 import com.zh.zhpicturebackend.common.ResultUtils;
+import com.zh.zhpicturebackend.constant.UserConstant;
 import com.zh.zhpicturebackend.exception.ErrorCode;
 import com.zh.zhpicturebackend.exception.ThrowUtils;
 import com.zh.zhpicturebackend.model.dto.UserLoginRequest;
 import com.zh.zhpicturebackend.model.dto.UserRegisterRequest;
 import com.zh.zhpicturebackend.model.entity.User;
+import com.zh.zhpicturebackend.model.enums.UserRoleEnum;
 import com.zh.zhpicturebackend.model.vo.LoginUserVO;
 import com.zh.zhpicturebackend.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +23,6 @@ public class UserController {
 
     @Resource
     private UserService userService;
-
     /**
      * 用户注册
      */
@@ -60,7 +62,7 @@ public class UserController {
      * @param request
      * @return
      */
-    @PostMapping("/register")
+    @PostMapping("/logout")
     public BaseResponse<Boolean> userLoginout(HttpServletRequest request) {
         ThrowUtils.throwIf(request == null, ErrorCode.PARAMS_ERROR);
         Boolean result = userService.userLoginout(request);
