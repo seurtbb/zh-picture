@@ -158,19 +158,18 @@ public class UserController {
     /**
      * 分页获取用户封装列表(管理员)
      * @param userQueryRequest
-     * @return
+     * @return todo:为什么分页不显示具体的数据?
      */
-    @AutoCheck(mustRole = UserConstant.ADMIN_ROLE)
     @PostMapping("/list/page/vo")
-    public BaseResponse<Page<UserVO>> listUserVOByPage(@RequestBody UserQueryRequest userQueryRequest){
+    @AutoCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Page<UserVO>> listUserVOByPage(@RequestBody UserQueryRequest userQueryRequest) {
         ThrowUtils.throwIf(userQueryRequest == null, ErrorCode.PARAMS_ERROR);
-        long current =  userQueryRequest.getCurrent();
+        long current = userQueryRequest.getCurrent();
         long pageSize = userQueryRequest.getPageSize();
-        Page<User> userPage=userService.page(new Page<>(current,pageSize),
-                userService.getQueryWrapper(userQueryRequest)
-                );
-        Page<UserVO> userVOPage=new Page<>(current,pageSize,userPage.getTotal());
-        List<UserVO> userVOList=userService.getUserVOList(userPage.getRecords());
+        Page<User> userPage = userService.page(new Page<>(current, pageSize),
+                userService.getQueryWrapper(userQueryRequest));
+        Page<UserVO> userVOPage = new Page<>(current, pageSize, userPage.getTotal());
+        List<UserVO> userVOList = userService.getUserVOList(userPage.getRecords());
         userVOPage.setRecords(userVOList);
         return ResultUtils.success(userVOPage);
     }
