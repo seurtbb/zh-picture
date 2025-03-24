@@ -1,4 +1,4 @@
-package com.zh.zhpicturebackend.model.dto;
+package com.zh.zhpicturebackend.model.dto.user;
 
 import lombok.Data;
 

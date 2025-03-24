@@ -1,15 +1,12 @@
 package com.zh.zhpicturebackend.controller;
 
-import com.zh.zhpicturebackend.annotation.AutoCheck;
 import com.zh.zhpicturebackend.common.BaseResponse;
 import com.zh.zhpicturebackend.common.ResultUtils;
-import com.zh.zhpicturebackend.constant.UserConstant;
 import com.zh.zhpicturebackend.exception.ErrorCode;
 import com.zh.zhpicturebackend.exception.ThrowUtils;
-import com.zh.zhpicturebackend.model.dto.UserLoginRequest;
-import com.zh.zhpicturebackend.model.dto.UserRegisterRequest;
+import com.zh.zhpicturebackend.model.dto.user.UserLoginRequest;
+import com.zh.zhpicturebackend.model.dto.user.UserRegisterRequest;
 import com.zh.zhpicturebackend.model.entity.User;
-import com.zh.zhpicturebackend.model.enums.UserRoleEnum;
 import com.zh.zhpicturebackend.model.vo.LoginUserVO;
 import com.zh.zhpicturebackend.service.UserService;
 import org.springframework.web.bind.annotation.*;

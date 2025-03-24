@@ -6,9 +6,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zh.zhpicturebackend.constant.UserConstant;
 import com.zh.zhpicturebackend.exception.BusinessException;
 import com.zh.zhpicturebackend.exception.ErrorCode;
+import com.zh.zhpicturebackend.model.dto.user.UserQueryRequest;
 import com.zh.zhpicturebackend.model.entity.User;
 import com.zh.zhpicturebackend.model.enums.UserRoleEnum;
 import com.zh.zhpicturebackend.model.vo.LoginUserVO;
+import com.zh.zhpicturebackend.model.vo.UserVO;
 import com.zh.zhpicturebackend.service.UserService;
 import com.zh.zhpicturebackend.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,9 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.Collections;
+import java.util.List;
 
 import static com.zh.zhpicturebackend.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -130,7 +135,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     /**
      * 获取当前登录用户的信息,不需要返回给前端
-     *
      * @param request
      * @return
      */
@@ -164,6 +168,41 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         LoginUserVO loginUserVO = new LoginUserVO();
         BeanUtils.copyProperties(user, loginUserVO);
         return loginUserVO;
+    }
+
+    /**
+     * 获取用户脱敏信息
+     * @param user 脱敏前的信息
+     * @return 脱敏后的信息
+     */
+    @Override
+    public UserVO getUserVO(User user) {
+        if (user == null) {
+            return null;
+        }
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+        return userVO;
+    }
+
+    /**
+     * 批量获取用户脱敏信息
+     * @param userList 脱敏前的信息
+     * @return 脱敏后的 List 列表
+     */
+    @Override
+    public List<UserVO> getUserVOList(List<User> userList) {
+        return Collections.emptyList();
+    }
+
+    /**
+     * 获取查询条件
+     * @param userQueryRequest 查询条件
+     * @return 查询条件
+     */
+    @Override
+    public QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
+        return null;
     }
 
     /**
