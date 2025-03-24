@@ -103,7 +103,7 @@ public class UserController {
      */
     @AutoCheck(mustRole = UserConstant.ADMIN_ROLE)
     @PostMapping("/get")
-    public BaseResponse<User> getUserById(long id) {
+    public BaseResponse<User>   getUserById(long id) {
         ThrowUtils.throwIf(id <0, ErrorCode.PARAMS_ERROR);
         User user = userService.getById(id);
         ThrowUtils.throwIf(user == null, ErrorCode.NOT_FOUND_ERROR);
@@ -160,6 +160,8 @@ public class UserController {
      * @param userQueryRequest
      * @return
      */
+    @AutoCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @PostMapping("/list/page/vo")
     public BaseResponse<Page<UserVO>> listUserVOByPage(@RequestBody UserQueryRequest userQueryRequest){
         ThrowUtils.throwIf(userQueryRequest == null, ErrorCode.PARAMS_ERROR);
         long current =  userQueryRequest.getCurrent();

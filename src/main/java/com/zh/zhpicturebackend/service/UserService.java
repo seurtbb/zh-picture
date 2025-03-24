@@ -6,6 +6,7 @@ import com.zh.zhpicturebackend.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zh.zhpicturebackend.model.vo.LoginUserVO;
 import com.zh.zhpicturebackend.model.vo.UserVO;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 * @description 针对表【user(用户)】的数据库操作Service
 * @createDate 2025-03-18 10:42:48
 */
+
 public interface UserService extends IService<User> {
 
     /**
