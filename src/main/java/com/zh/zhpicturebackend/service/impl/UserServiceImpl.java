@@ -10,6 +10,7 @@ import com.zh.zhpicturebackend.model.enums.UserRoleEnum;
 import com.zh.zhpicturebackend.model.vo.LoginUserVO;
 import com.zh.zhpicturebackend.service.UserService;
 import com.zh.zhpicturebackend.mapper.UserMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -17,13 +18,22 @@ import org.springframework.util.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
 
 /**
-* @author zhouzhou
-* @description 针对表【user(用户)】的数据库操作Service实现
-* @createDate 2025-03-18 10:42:48
-*/
+ * @author zhouzhou
+ * @description 针对表【user(用户)】的数据库操作Service实现
+ * @createDate 2025-03-18 10:42:48
+ */
 @Service
+@Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
-    implements UserService{
+        implements UserService {
+    /**
+     * 用户注册
+     *
+     * @param userAccount   用户账户
+     * @param userPassword  用户密码
+     * @param checkPassword 校验密码
+     * @return 新用户 id
+     */
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
         // 1. 校验
@@ -62,14 +72,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     /**
-     * 获取加密后的密码
+     * 密码加密
+     *
      * @param userPassword
      * @return
      */
     @Override
     public String getEncryptPassword(String userPassword) {
         // 盐值，混淆密码
-        final String SALT = "yupi";
+        final String SALT = "zzh";
         return DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
     }
 
@@ -90,7 +101,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (userAccount.length() < 4) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户账号过短");
         }
-        if (userPassword.length() < 8 ) {
+        if (userPassword.length() < 8) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户密码过短");
         }
         //2.对用户信息加密
@@ -99,14 +110,33 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("userAccount", userAccount);
         queryWrapper.eq("userPassword", encryptPassword);
+        //selectOne,查询用户存在 一条记录就可
         User user = this.baseMapper.selectOne(queryWrapper);
-
         //不存在,抛出异常
+        if (user == null) {
+            log.info("user or Password not exist");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或者密码错误");
+        }
         //4.保存用户的登录态
-        return null;
+        request.getSession().setAttribute("user_login_state", user);
+        //要返回脱敏后的用户信息
+        return this.getLoginUserVo(user);
     }
 
-
+    /**
+     * 获得脱敏后的用户信息
+     * @param user
+     * @return
+     */
+    @Override
+    public LoginUserVO getLoginUserVo(User user) {
+        if (user == null) {
+            return null;
+        }
+        LoginUserVO loginUserVO = new LoginUserVO();
+        BeanUtils.copyProperties(user, loginUserVO);
+        return loginUserVO;
+    }
 }
 
 

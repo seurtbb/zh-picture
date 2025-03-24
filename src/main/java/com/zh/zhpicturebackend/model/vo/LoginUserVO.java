@@ -15,14 +15,10 @@ public class LoginUserVO {
      */
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
-
     /**
      * 账号
      */
     private String userAccount;
-
-
-
     /**
      * 用户昵称
      */
@@ -57,8 +53,6 @@ public class LoginUserVO {
      * 更新时间
      */
     private Date updateTime;
-
-
 
     private static final long serialVersionUID = 1L;
 }
