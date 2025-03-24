@@ -1,6 +1,5 @@
 package com.zh.zhpicturebackend.common;
 
-import com.zh.zhpicturebackend.exception.BusinessException;
 import com.zh.zhpicturebackend.exception.ErrorCode;
 
 /**
