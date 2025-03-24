@@ -1,10 +1,14 @@
 package com.zh.zhpicturebackend.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zh.zhpicturebackend.model.dto.user.UserQueryRequest;
 import com.zh.zhpicturebackend.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zh.zhpicturebackend.model.vo.LoginUserVO;
+import com.zh.zhpicturebackend.model.vo.UserVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author zhouzhou
@@ -51,6 +55,28 @@ public interface UserService extends IService<User> {
      * @return
      */
     LoginUserVO getLoginUserVo(User user);
+    /**
+     * 获取用户脱敏信息
+     * @param user 脱敏前的信息
+     * @return 脱敏后的信息
+     */
+    UserVO getUserVO(User user);
+
+    /**
+     * 批量获取用户脱敏信息
+     * @param userList 脱敏前的信息
+     * @return 脱敏后的 List 列表
+     */
+    List<UserVO> getUserVOList(List<User> userList);
+
+    /**
+     * 获取查询条件
+     *
+     * @param userQueryRequest 查询条件
+     * @return 查询条件
+     */
+    QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
+
 
     /**
      * 用户登录退出
