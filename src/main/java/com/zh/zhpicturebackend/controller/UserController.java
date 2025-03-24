@@ -1,18 +1,25 @@
 package com.zh.zhpicturebackend.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zh.zhpicturebackend.annotation.AutoCheck;
 import com.zh.zhpicturebackend.common.BaseResponse;
+import com.zh.zhpicturebackend.common.DeleteRequest;
 import com.zh.zhpicturebackend.common.ResultUtils;
+import com.zh.zhpicturebackend.constant.UserConstant;
+import com.zh.zhpicturebackend.exception.BusinessException;
 import com.zh.zhpicturebackend.exception.ErrorCode;
 import com.zh.zhpicturebackend.exception.ThrowUtils;
-import com.zh.zhpicturebackend.model.dto.user.UserLoginRequest;
-import com.zh.zhpicturebackend.model.dto.user.UserRegisterRequest;
+import com.zh.zhpicturebackend.model.dto.user.*;
 import com.zh.zhpicturebackend.model.entity.User;
 import com.zh.zhpicturebackend.model.vo.LoginUserVO;
+import com.zh.zhpicturebackend.model.vo.UserVO;
 import com.zh.zhpicturebackend.service.UserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -64,5 +71,105 @@ public class UserController {
         ThrowUtils.throwIf(request == null, ErrorCode.PARAMS_ERROR);
         Boolean result = userService.userLoginout(request);
         return ResultUtils.success(result);
+    }
+
+
+    /**
+     * 创建用户
+     * @param userAddRequest
+     * @return
+     */
+    @AutoCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @PostMapping("/add")
+    public BaseResponse<Long> addUser(@RequestBody UserAddRequest userAddRequest) {
+        ThrowUtils.throwIf(userAddRequest == null, ErrorCode.PARAMS_ERROR);
+        User user = new User();
+        //给用户设置默认密码
+        final String  DEFAULT_PASSWORD = "123456";
+        //给密码加密
+        String encryptPassword = userService.getEncryptPassword(DEFAULT_PASSWORD);
+        user.setUserPassword(encryptPassword);
+        BeanUtils.copyProperties(userAddRequest, user);
+        //插入数据库
+        boolean isSave = userService.save(user);
+        ThrowUtils.throwIf(!isSave, ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(user.getId());
+    }
+
+    /**
+     * 根据用户id获取用户(管理员)
+     * @param id
+     * @return
+     */
+    @AutoCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @PostMapping("/get")
+    public BaseResponse<User> getUserById(long id) {
+        ThrowUtils.throwIf(id <0, ErrorCode.PARAMS_ERROR);
+        User user = userService.getById(id);
+        ThrowUtils.throwIf(user == null, ErrorCode.NOT_FOUND_ERROR);
+        return ResultUtils.success(user);
+    }
+
+    /**
+     * 根据id获取包装类
+     * @param id
+     * @return
+     */
+    @GetMapping("/get/vo")
+    public BaseResponse<UserVO> getUserVOById(long id) {
+        BaseResponse<User> response = getUserById(id);
+        User user = response.getData();
+        return ResultUtils.success(userService.getUserVO(user));
+    }
+
+    /**
+     * 删除用户信息
+     * @param deleteRequest
+     * @return
+     */
+    @AutoCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @PostMapping("/delete")
+    public BaseResponse<Boolean> deleteUser(@RequestBody DeleteRequest deleteRequest) {
+        if(deleteRequest==null || deleteRequest.getId()<=0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        boolean b = userService.removeById(deleteRequest.getId());
+        return ResultUtils.success(b);
+    }
+
+    /**
+     * 更新用户信息
+     * @param userUpdateRequest
+     * @return
+     */
+    @AutoCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @PostMapping("/update")
+    public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
+        if(userUpdateRequest==null || userUpdateRequest.getId()==null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User user=new User();
+        BeanUtils.copyProperties(userUpdateRequest, user);
+        boolean b = userService.updateById(user);
+        ThrowUtils.throwIf(!b, ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(true);
+    }
+
+    /**
+     * 分页获取用户封装列表(管理员)
+     * @param userQueryRequest
+     * @return
+     */
+    public BaseResponse<Page<UserVO>> listUserVOByPage(@RequestBody UserQueryRequest userQueryRequest){
+        ThrowUtils.throwIf(userQueryRequest == null, ErrorCode.PARAMS_ERROR);
+        long current =  userQueryRequest.getCurrent();
+        long pageSize = userQueryRequest.getPageSize();
+        Page<User> userPage=userService.page(new Page<>(current,pageSize),
+                userService.getQueryWrapper(userQueryRequest)
+                );
+        Page<UserVO> userVOPage=new Page<>(current,pageSize,userPage.getTotal());
+        List<UserVO> userVOList=userService.getUserVOList(userPage.getRecords());
+        userVOPage.setRecords(userVOList);
+        return ResultUtils.success(userVOPage);
     }
 }

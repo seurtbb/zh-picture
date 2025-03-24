@@ -1,5 +1,6 @@
 package com.zh.zhpicturebackend.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -15,15 +16,15 @@ import com.zh.zhpicturebackend.service.UserService;
 import com.zh.zhpicturebackend.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.zh.zhpicturebackend.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -192,7 +193,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public List<UserVO> getUserVOList(List<User> userList) {
-        return Collections.emptyList();
+        if(CollUtil.isEmpty(userList)) {return new ArrayList<>();}
+        return userList.stream()
+                .map(this::getUserVO)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -202,7 +206,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     @Override
     public QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
-        return null;
+        if (userQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
+        }
+        Long id = userQueryRequest.getId();
+        String userAccount = userQueryRequest.getUserAccount();
+        String userName = userQueryRequest.getUserName();
+        String userProfile = userQueryRequest.getUserProfile();
+        String userRole = userQueryRequest.getUserRole();
+        String sortField = userQueryRequest.getSortField();
+        String sortOrder = userQueryRequest.getSortOrder();
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(Objects.nonNull(id), "id", id);
+        queryWrapper.eq(StrUtil.isNotBlank(userRole), "userRole", userRole);
+        queryWrapper.like(StrUtil.isNotBlank(userAccount), "userAccount", userAccount);
+        queryWrapper.like(StrUtil.isNotBlank(userName), "userName", userName);
+        queryWrapper.like(StrUtil.isNotBlank(userProfile), "userProfile", userProfile);
+        queryWrapper.orderBy(StrUtil.isNotBlank(sortField), sortOrder.equals("ascend"), sortField);
+        return queryWrapper;
     }
 
     /**
