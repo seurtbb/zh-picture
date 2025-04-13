@@ -14,6 +14,7 @@ import com.zh.zhpicturebackend.model.entity.User;
 import com.zh.zhpicturebackend.model.vo.LoginUserVO;
 import com.zh.zhpicturebackend.model.vo.UserVO;
 import com.zh.zhpicturebackend.service.UserService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +43,7 @@ public class UserController {
     /**
      * 用户登录
      */
+    @ApiOperation(value = "用户登录", notes = "用户登录")
     @PostMapping("/login")
     public BaseResponse<LoginUserVO> userlogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         ThrowUtils.throwIf(userLoginRequest == null, ErrorCode.PARAMS_ERROR);

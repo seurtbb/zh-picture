@@ -1,5 +1,8 @@
 package com.zh.zhpicturebackend.exception;
 
+/**
+ * @author zzh
+ */
 public class ThrowUtils {
 
     /**
