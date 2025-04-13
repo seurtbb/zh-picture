@@ -40,14 +40,26 @@ public class FileManager {
     @Resource
     private CosManager cosManager;
 
-
+    /**
+     * 校验文件
+     * @param multipartFile 文件
+     */
+    private void validateFile(MultipartFile multipartFile) {
+        ThrowUtils.throwIf(multipartFile == null, ErrorCode.PARAMS_ERROR, "文件为空");
+        //1.校验文件大小
+        ThrowUtils.throwIf(multipartFile.getSize() >2* ONE_M, ErrorCode.PARAMS_ERROR, "文件大小不能超过2M");
+        //2.校验文件后缀
+        String fileSuffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());
+        //允许上传的文件后缀
+        ThrowUtils.throwIf(!ALLOW_FORMAT_LIST.contains(fileSuffix), ErrorCode.PARAMS_ERROR, "不支持的文件类型");
+    }
     public UploadPictureResult uploadPicture(MultipartFile multipartFile, String uploadPathPrefix) {
         //校验图片
         validateFile(multipartFile);
         //图片上传路径
         String uuid=RandomUtil.randomString(16);
         String originalFileName = multipartFile.getOriginalFilename();
-        //自己拼接文件的上传路径,而不是使用原始文件路径名称,可以增强安全性---时间+uuid+文件后缀
+        //自己拼接文件的上传路径,而不是使用原始文件路径名称,可以增强安全性--->时间+uuid+文件后缀
         String uploadFileName=String.format("%s_%s_%s", DateUtil.formatDate(new Date()), uuid,FileUtil.getSuffix(originalFileName));
         String uploadPath=String.format("%s/%s",uploadPathPrefix,uploadFileName);
         File file = null;
@@ -84,19 +96,7 @@ public class FileManager {
     }
 
 
-    /**
-     * 校验文件
-     * @param multipartFile 文件
-     */
-    private void validateFile(MultipartFile multipartFile) {
-        ThrowUtils.throwIf(multipartFile == null, ErrorCode.PARAMS_ERROR, "文件为空");
-        //1.校验文件大小
-        ThrowUtils.throwIf(multipartFile.getSize() >2* ONE_M, ErrorCode.PARAMS_ERROR, "文件大小不能超过2M");
-        //2.校验文件后缀
-        String fileSuffix = FileUtil.getSuffix(multipartFile.getOriginalFilename());
-        //允许上传的文件后缀
-        ThrowUtils.throwIf(!ALLOW_FORMAT_LIST.contains(fileSuffix), ErrorCode.PARAMS_ERROR, "不支持的文件类型");
-    }
+
 
     /**
      * 临时删除文件

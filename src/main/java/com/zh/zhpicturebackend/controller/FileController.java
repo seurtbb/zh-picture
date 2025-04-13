@@ -18,9 +18,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * @author zzh
+ */
 @Slf4j
 @RestController
 @RequestMapping("/file")
+@Deprecated
 public class FileController {
     @Resource
     private CosManager cosManager;

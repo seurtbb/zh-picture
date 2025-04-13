@@ -3,13 +3,16 @@ package com.zh.zhpicturebackend.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
+
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * 已登录视图(脱敏)
+ * @author zzh
  */
 @Data
-public class LoginUserVO {
+public class LoginUserVO implements Serializable {
     /**
      * id
      */
