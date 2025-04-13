@@ -3,10 +3,7 @@ package com.zh.zhpicturebackend.manager;
 
 
 import com.qcloud.cos.COSClient;
-import com.qcloud.cos.model.GetObjectRequest;
-import com.qcloud.cos.model.ObjectMetadata;
-import com.qcloud.cos.model.PutObjectRequest;
-import com.qcloud.cos.model.PutObjectResult;
+import com.qcloud.cos.model.*;
 
 import com.qcloud.cos.model.ciModel.persistence.PicOperations;
 import com.zh.zhpicturebackend.config.CosClientConfig;
@@ -35,7 +32,16 @@ public class CosManager {
                 new PutObjectRequest(cosClientConfig.getBucket(), key, file);
         return cosClient.putObject(putObjectRequest);
     }
-   //todo 下载对象
+
+    /**
+     * 下载对象
+     * @param key
+     * @return
+     */
+    public COSObject getObject(String key) {
+        GetObjectRequest getObjectRequest = new GetObjectRequest(cosClientConfig.getBucket(), key);
+        return cosClient.getObject(getObjectRequest);
+    }
 
     /**
      * 上传对象（附带图片信息）
