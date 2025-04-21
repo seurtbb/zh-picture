@@ -1,7 +1,7 @@
 package com.zh.zhpicturebackend.mapper;
 
-import com.zh.zhpicturebackend.model.entity.Picture;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zh.zhpicturebackend.model.entity.Picture;
 
 /**
 * @author zhouzhou

@@ -24,8 +24,8 @@ public class CosManager {
     /**
      * 上传对象
      *
-     * @param key  唯一键
-     * @param file 文件
+     * @param key  指定文件上传到 COS 上的路径，即对象键。例如对象键为 folder/picture.jpg，则表示将文件 picture.jpg 上传到 folder 路径下
+     * @param file 指定要上传的文件
      */
     public PutObjectResult putObject(String key, File file) {
         PutObjectRequest putObjectRequest = new PutObjectRequest(cosClientConfig.getBucket(), key, file);

@@ -4,6 +4,11 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpStatus;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.http.Method;
 import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.model.ciModel.persistence.ImageInfo;
 import com.zh.zhpicturebackend.config.CosClientConfig;
@@ -11,12 +16,15 @@ import com.zh.zhpicturebackend.exception.BusinessException;
 import com.zh.zhpicturebackend.exception.ErrorCode;
 import com.zh.zhpicturebackend.exception.ThrowUtils;
 import com.zh.zhpicturebackend.model.dto.file.UploadPictureResult;
+import lombok.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.File;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -27,10 +35,12 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@Deprecated
 public class FileManager {
     /**
      * 1 兆
-     */private static final long ONE_M =  1024 * 1024L;
+     */
+    private static final long ONE_M =  1024 * 1024L;
 
     private static final List<String> ALLOW_FORMAT_LIST = Arrays.asList("jpeg", "jpg", "png", "webp");
 
@@ -53,6 +63,7 @@ public class FileManager {
         //允许上传的文件后缀
         ThrowUtils.throwIf(!ALLOW_FORMAT_LIST.contains(fileSuffix), ErrorCode.PARAMS_ERROR, "不支持的文件类型");
     }
+
     public UploadPictureResult uploadPicture(MultipartFile multipartFile, String uploadPathPrefix) {
         //校验图片
         validateFile(multipartFile);
